@@ -15,10 +15,10 @@ function addCard(cardItem, deleteCallback) {
   imageCard.src = cardItem.link;
   imageCard.alt = cardItem.name;
   titleCard.textContent = cardItem.name;
-  // @todo: Функция удаления карточки
+
   deleteButtonCard.addEventListener('click', function () {
     deleteCallback(cardElement)
-  }); 
+  });
 
   likeButtonCard.addEventListener("click", function (evt) {
     evt.target.classList.toggle("card__like-button");
@@ -26,8 +26,8 @@ function addCard(cardItem, deleteCallback) {
 
   return cardElement;
 }
-
-function cardDelete (cardElement) {
+// @todo: Функция удаления карточки
+function cardDelete(cardElement) {
   cardElement.remove();
 }
 
