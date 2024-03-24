@@ -27,11 +27,11 @@ function addCard(cardItem, deleteCallback) {
   return cardElement;
 }
 
-function handleDelete (cardElement) {
+function cardDelete (cardElement) {
   cardElement.remove();
 }
 
 // @todo: Вывести карточки на страницу
 initialCards.forEach(function (cardItem) {
-  placesList.append(addCard(cardItem, handleDelete));
+  placesList.append(addCard(cardItem, cardDelete));
 });
