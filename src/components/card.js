@@ -1,7 +1,8 @@
 //Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
 //Функция создания карточки
-function createCard(cardItem, deleteCallback, likeCallback, imageClickCallback) {
+function createCard(options) {
+  const { cardItem, deleteCallback, likeCallback, imageClickCallback } = options;
   const cardElement = cardTemplate.querySelector(".places__item").cloneNode(true);
   const imageCard = cardElement.querySelector(".card__image");
   const titleCard = cardElement.querySelector(".card__title");
