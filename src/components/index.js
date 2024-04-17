@@ -58,7 +58,7 @@ function handleAddFormSubmit(evt) {
 }
 
 addForm.addEventListener('submit', handleAddFormSubmit);
-// Модальное окно с добавление карточки
+// Модальное окно при клике на картинку
 function openImageModal(imageSrc, imageAlt) {
   popupImage.src = imageSrc;
   popupImage.alt = imageAlt;
