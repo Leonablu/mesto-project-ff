@@ -37,12 +37,10 @@ closeButtons.forEach(function (closeButton) {
 // Модальное окно с редактирование информации о пользователе
 function handleFormSubmit(evt) {
   evt.preventDefault();
-
   const name = nameInput.value;
   const description = descriptionInput.value;
   const nameElement = document.querySelector(".profile__title");
   const descriptionElement = document.querySelector(".profile__description");
-
   nameElement.textContent = name;
   descriptionElement.textContent = description;
   closeModal(editPopup);
@@ -52,13 +50,9 @@ formElement.addEventListener('submit', handleFormSubmit);
 // Модальное окно с добавление карточки
 function handleAddFormSubmit(evt) {
   evt.preventDefault(); 
-  
   const cardName = nameCardInput.value;
   const cardUrl = urlCardInput.value;
-  
-  const newCard = createCard({ name: cardName, link: cardUrl }, deleteCard, handleLike, openImageModal);
-  placesList.prepend(newCard); 
- 
+  placesList.prepend(createCard({ name: cardName, link: cardUrl }, deleteCard, handleLike, openImageModal));
   closeModal(addPopup);
   addForm.reset(); 
 }
