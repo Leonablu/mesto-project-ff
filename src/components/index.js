@@ -9,6 +9,7 @@ const editButton = document.querySelector(".profile__edit-button");
 const addPopup = document.querySelector(".popup_type_new-card");
 const addButton = document.querySelector(".profile__add-button");
 const closeButtons = document.querySelectorAll(".popup__close");
+const form = document.querySelector('.popup__form');
 const profileForm = document.forms["edit-profile"];
 const newPlaceForm = document.forms["new-place"];
 const nameInput = document.querySelector(".popup__input_type_name");
@@ -20,11 +21,14 @@ const urlCardInput = document.querySelector(".popup__input_type_url");
 const imgPopup = document.querySelector('.popup_type_image');
 const popupImage = document.querySelector('.popup__image');
 const popupCaption = document.querySelector('.popup__caption');
+const popupInput = form.querySelector('.popup__input');
+const formError = form.querySelector(`.${popupInput.id}-error`);
 // Открытие модального окна по клику на кнопку
 function toggleModal(button, popup, isEdit = false) {
   button.addEventListener('click', function() {
     if (isEdit) {
       fillProfileForm();
+      resetFormErrors(popup);
     }
     openModal(popup);
   });
@@ -36,6 +40,18 @@ toggleModal(addButton, addPopup);
 function fillProfileForm() {
   nameInput.value = nameElement.textContent;
   descriptionInput.value = descriptionElement.textContent;
+}
+// Функция для сброса ошибок валидации
+function resetFormErrors(popup) {
+  const errorElements = popup.querySelectorAll('.form__input-error_active');
+  const inputElements = popup.querySelectorAll('.popup__input');
+  errorElements.forEach((errorElement) => {
+      errorElement.classList.remove('form__input-error_active');
+      errorElement.textContent = '';
+  });
+  inputElements.forEach((inputElement) => {
+      inputElement.classList.remove('form__input_type_error');
+  });
 }
 // Закрытие модального окна по клику на крестик
 closeButtons.forEach(function (closeButton) {
@@ -80,6 +96,75 @@ function handlenewPlaceFormSubmit(evt) {
 }
 
 newPlaceForm.addEventListener('submit', handlenewPlaceFormSubmit);
+// Работа с формами
+const showInputError = (formElement, inputElement, errorMessage) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add('form__input_type_error');
+  errorElement.textContent = errorMessage;
+  errorElement.classList.add('form__input-error_active');
+};
+
+
+const hideInputError = (formElement, inputElement) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove('form__input_type_error');
+  errorElement.classList.remove('form__input-error_active');
+  errorElement.textContent = '';
+};
+
+const checkInputValidity = (formElement, inputElement) => {
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+};
+
+const setEventListeners = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+  const buttonElement = formElement.querySelector('.popup__button');
+  toggleButtonState(inputList, buttonElement);
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener('input', function () {
+      checkInputValidity(formElement, inputElement);
+      toggleButtonState(inputList, buttonElement);
+    });
+  });
+};
+
+function enableValidation() {
+  const formList = Array.from(document.querySelectorAll('.popup__form'));
+  formList.forEach((formElement) => {
+    formElement.addEventListener('submit', function (evt) {
+      evt.preventDefault()
+    });
+    setEventListeners(formElement);
+  });
+};
+
+const hasInvalidInput = (inputList) => {
+  
+  return inputList.some((inputElement) => {
+
+    return !inputElement.validity.valid;
+  })
+}; 
+
+const toggleButtonState = (inputList, buttonElement) => {
+
+if  (hasInvalidInput(inputList)) {
+    // сделай кнопку неактивной
+        buttonElement.disabled = true;
+    buttonElement.classList.add('button_inactive');
+  } else {
+        // иначе сделай кнопку активной
+        buttonElement.disabled = false;
+    buttonElement.classList.remove('button_inactive');
+  }
+}; 
+
+enableValidation()
+
 // Вывести карточки на страницу
 initialCards.forEach(function (cardItem) {
   const cardOptions = {
