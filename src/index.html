@@ -53,6 +53,8 @@
               placeholder="Имя"
               minlength="2"
               maxlength="40"
+              pattern="^[A-Za-zА-Яа-яЁё\s\-]+$"
+              data-error-message="Допустимы только латинские и кириллические буквы, знаки дефиса и пробелы."
               required
             />
             <input
@@ -63,9 +65,11 @@
               placeholder="Занятие"
               minlength="2"
               maxlength="200"
+              pattern="^[A-Za-zА-Яа-яЁё\s\-]+$"
+              data-error-message="Допустимы только латинские и кириллические буквы, знаки дефиса и пробелы."
               required
             />
-            <span class="name-id-error description-id-error form__input-error"></span>
+            <span class="name-id-error description-id-error popup__input-error"></span>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -85,6 +89,8 @@
               placeholder="Название"
               minlength="2"
               maxlength="30"
+              pattern="^[A-Za-zА-Яа-яЁё\s\-]+$"
+              data-error-message="Допустимы только латинские и кириллические буквы, знаки дефиса и пробелы."
               required
             />
             <input
