@@ -99,13 +99,11 @@ function handlenewPlaceFormSubmit(evt) {
   addNewCard(cardData)
     .then((newCard) => {
       const cardElement = createCard({
-        cardItem: {
-          name: newCard.name,
-          link: newCard.link
-        },
+        cardItem: newCard,
         deleteCallback: deleteCard,
         likeCallback: handleLike,
-        imageClickCallback: openImageModal
+        imageClickCallback: openImageModal,
+        likes: newCard.likes || [] 
       });
       placesList.prepend(cardElement);
       closeModal(addPopup);
@@ -130,8 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
           deleteCallback: deleteCard,
           likeCallback: handleLike,
           imageClickCallback: openImageModal,
-          userId: userInfo._id 
+          userId: userInfo._id,
+          likes: cardItem.likes
         };
+        
         placesList.append(createCard(cardOptions));
       });
       updateUserProfile(userInfo);
@@ -141,4 +141,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
- 
+
+
