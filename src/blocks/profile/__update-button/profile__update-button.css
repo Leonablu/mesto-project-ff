@@ -1,0 +1,12 @@
+.profile__update-button {
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  border: none;
+  position: absolute;
+  right: 52px;
+  top: 46px;
+  opacity: 0;
+  background: none;
+}

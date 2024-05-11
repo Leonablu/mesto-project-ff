@@ -1,47 +1,55 @@
-import '../pages/index.css'
-import { createCard, deleteCard, handleLike } from './card.js';
-import { openModal, closeModal } from './modal.js';
-import { enableValidation, clearValidation } from './validation.js';
-import { getInitialCards, getUserInfo, updateUserInfo, addNewCard } from './api.js'
+import "../pages/index.css"
+import { createCard, deleteCard, handleLike } from "./card.js";
+import { openModal, closeModal } from "./modal.js";
+import { enableValidation, clearValidation } from "./validation.js";
+import { getInitialCards, getUserInfo, updateUserInfo, addNewCard, addNewAvatar } from "./api.js"
 // DOM узлы
 const placesList = document.querySelector(".places__list");
 const editPopup = document.querySelector(".popup_type_edit");
 const editButton = document.querySelector(".profile__edit-button");
 const addPopup = document.querySelector(".popup_type_new-card");
 const addButton = document.querySelector(".profile__add-button");
+const updatePopup = document.querySelector(".popup_type_new-avatar");
+const updateButton = document.querySelector(".profile__update-button")
 const closeButtons = document.querySelectorAll(".popup__close");
 const profileForm = document.forms["edit-profile"];
 const newPlaceForm = document.forms["new-place"];
+const newAvatarForm = document.forms["avatar-profile"];
 const nameInput = document.querySelector(".popup__input_type_name");
 const descriptionInput = document.querySelector(".popup__input_type_description");
 const nameElement = document.querySelector(".profile__title");
 const descriptionElement = document.querySelector(".profile__description");
 const nameCardInput = document.querySelector(".popup__input_type_card-name");
 const urlCardInput = document.querySelector(".popup__input_type_url");
-const imgPopup = document.querySelector('.popup_type_image');
-const popupImage = document.querySelector('.popup__image');
-const popupCaption = document.querySelector('.popup__caption');
+const avatarUrlInput = document.querySelector('.popup__input_type_avatar-url');
+const imgPopup = document.querySelector(".popup_type_image");
+const profileImage = document.querySelector(".profile__image");
+const popupImage = document.querySelector(".popup__image");
+const popupCaption = document.querySelector(".popup__caption");
 const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible"
 };
+let currentUserId;
 // Открытие модального окна по клику на кнопку
 function toggleModal(button, popup, isEdit = false) {
-  button.addEventListener('click', function() {
+  button.addEventListener("click", function() {
     if (isEdit) {
       fillProfileForm();
       clearValidation(profileForm, validationConfig);
     }
     newPlaceForm.reset()
     clearValidation(newPlaceForm, validationConfig);
+    newAvatarForm.reset();
+    clearValidation(newAvatarForm, validationConfig);
     openModal(popup);
   });
 }
-
+toggleModal(updateButton, updatePopup)
 toggleModal(editButton, editPopup, true); 
 toggleModal(addButton, addPopup);
 // Функция заполнение инпутов значениями из элементов профиля
@@ -53,14 +61,39 @@ function fillProfileForm() {
 function updateUserProfile(userInfo) {
   nameElement.textContent = userInfo.name;
   descriptionElement.textContent = userInfo.about;
+  if (userInfo.avatar && profileImage) {
+    profileImage.style.backgroundImage = `url('${userInfo.avatar}')`;
+  }
 }
 // Закрытие модального окна по клику на крестик
 closeButtons.forEach(function (closeButton) {
-  closeButton.addEventListener('click', function () {
-      const popup = closeButton.closest('.popup');
+  closeButton.addEventListener("click", function () {
+      const popup = closeButton.closest(".popup");
       closeModal(popup);
   });
 });
+// Функция добавления аватара
+function handleUpdateFormSubmit(evt) {
+  evt.preventDefault();
+
+  const userData = avatarUrlInput.value;
+
+  addNewAvatar(userData)
+    .then(() => {
+      profileImage.style.backgroundImage = `url('${userData}')`;
+      closeModal(updatePopup);
+      newAvatarForm.reset();
+      clearValidation(newAvatarForm, validationConfig);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+newAvatarForm.addEventListener("submit", handleUpdateFormSubmit);
+
+
+
 // Модальное окно с редактирование информации о пользователе
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
@@ -79,7 +112,7 @@ function handleProfileFormSubmit(evt) {
     });
 }
 
-profileForm.addEventListener('submit', handleProfileFormSubmit);
+profileForm.addEventListener("submit", handleProfileFormSubmit);
 // Модальное окно при клике на картинку
 function openImageModal(imageSrc, imageAlt) {
   popupImage.src = imageSrc;
@@ -103,6 +136,7 @@ function handlenewPlaceFormSubmit(evt) {
         deleteCallback: deleteCard,
         likeCallback: handleLike,
         imageClickCallback: openImageModal,
+        userId: currentUserId,
         likes: newCard.likes || [] 
       });
       placesList.prepend(cardElement);
@@ -115,13 +149,14 @@ function handlenewPlaceFormSubmit(evt) {
     });
 }
 
-newPlaceForm.addEventListener('submit', handlenewPlaceFormSubmit);
+newPlaceForm.addEventListener("submit", handlenewPlaceFormSubmit);
 
 enableValidation(validationConfig);
 // Вывести карточки на страницу
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   Promise.all([getInitialCards(), getUserInfo()])
     .then(([cards, userInfo]) => {
+      currentUserId = userInfo._id;
       cards.forEach(function (cardItem) {
         const cardOptions = {
           cardItem: cardItem,

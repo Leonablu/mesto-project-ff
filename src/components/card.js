@@ -1,4 +1,4 @@
-import { likeCard, dislikeCard } from './api.js'
+import { likeCard, dislikeCard, removeCard } from './api.js'
 //Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
 //Функция создания карточки
@@ -18,10 +18,16 @@ function createCard(options) {
   
   const isLikedByUser = likes.some(like => like._id === userId);
   likeButtonCard.classList.toggle("card__like-button_is-active", isLikedByUser);
-  likeCounter.textContent = likes.length; 
+  likeCounter.textContent = likes.length;   
+ 
+  if (cardItem.owner._id !== userId) {
+     deleteButtonCard.style.display = "none";
+    }
 //Функция каллбека при удалении
   deleteButtonCard.addEventListener("click", function () {
-    deleteCallback(cardElement);
+    removeCard(cardItem._id) // Используем функцию removeCard для удаления карточки из базы данных
+      .then(() => deleteCard(cardElement)) // После успешного удаления удаляем элемент карточки из DOM
+      .catch(err => console.error(err)); // Обрабатываем возможные ошибки
   });
 //Функция каллбека при лайке
   likeButtonCard.addEventListener("click", function () {
