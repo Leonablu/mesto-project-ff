@@ -25,9 +25,9 @@ function createCard(options) {
     }
 //Функция каллбека при удалении
   deleteButtonCard.addEventListener("click", function () {
-    removeCard(cardItem._id) // Используем функцию removeCard для удаления карточки из базы данных
-      .then(() => deleteCard(cardElement)) // После успешного удаления удаляем элемент карточки из DOM
-      .catch(err => console.error(err)); // Обрабатываем возможные ошибки
+    removeCard(cardItem._id)
+      .then(() => deleteCard(cardElement))
+      .catch(err => console.error(err));
   });
 //Функция каллбека при лайке
   likeButtonCard.addEventListener("click", function () {

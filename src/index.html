@@ -129,12 +129,20 @@
           </form>
         </div>
       </div>
-      <div class="popup popup_type_new-avatar">
-        <div class="popup__content">
+      <div class="popup popup_type_image">
+        <div class="popup__content popup__content_content_image">
           <button type="button" class="popup__close"></button>
-          <h3 class="popup__title">Обновить аватар</h3>
-          <form class="popup__form" name="avatar-profile" novalidate>
-            <input
+          <img src="" alt="" class="popup__image" />
+          <p class="popup__caption"></p>
+        </div>
+      </div>
+    </div>
+    <div class="popup popup_type_new-avatar">
+      <div class="popup__content">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+        <form class="popup__form" name="avatar-profile" novalidate>
+          <input
             type="url"
             name="link"
             class="popup__input popup__input_type_avatar-url"
@@ -142,20 +150,9 @@
             placeholder="Ссылка на аватарку"
             required
           />
-          <span
-            class="link-id-error form__input-error"
-          ></span>
-            <button type="submit" class="button popup__button">
-              Сохранить
-            </button>
-          </form>
-        </div>
-      <div class="popup popup_type_image">
-        <div class="popup__content popup__content_content_image">
-          <button type="button" class="popup__close"></button>
-          <img src="" alt="" class="popup__image" />
-          <p class="popup__caption"></p>
-        </div>
+          <span class="link-id-error form__input-error"></span>
+          <button type="submit" class="button popup__button">Сохранить</button>
+        </form>
       </div>
     </div>
     <template id="card-template">

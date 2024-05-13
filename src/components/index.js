@@ -91,9 +91,6 @@ function handleUpdateFormSubmit(evt) {
 }
 
 newAvatarForm.addEventListener("submit", handleUpdateFormSubmit);
-
-
-
 // Модальное окно с редактирование информации о пользователе
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
