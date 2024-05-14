@@ -174,6 +174,8 @@ function handlenewPlaceFormSubmit(evt) {
 }
 
 newPlaceForm.addEventListener("submit", handlenewPlaceFormSubmit);
+
+enableValidation(validationConfig);
 // Вывести карточки на страницу
 document.addEventListener("DOMContentLoaded", () => {
   Promise.all([getInitialCards(), getUserInfo()])
@@ -197,5 +199,3 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(err);
     });
 });
-
-enableValidation(validationConfig);
