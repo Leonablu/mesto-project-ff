@@ -21,11 +21,12 @@ const nameElement = document.querySelector(".profile__title");
 const descriptionElement = document.querySelector(".profile__description");
 const nameCardInput = document.querySelector(".popup__input_type_card-name");
 const urlCardInput = document.querySelector(".popup__input_type_url");
-const avatarUrlInput = document.querySelector('.popup__input_type_avatar-url');
+const avatarUrlInput = document.querySelector(".popup__input_type_avatar-url");
 const imgPopup = document.querySelector(".popup_type_image");
 const profileImage = document.querySelector(".profile__image");
 const popupImage = document.querySelector(".popup__image");
 const popupCaption = document.querySelector(".popup__caption");
+const popupSaveButton = document.querySelector(".popup__button")
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -35,6 +36,14 @@ const validationConfig = {
   errorClass: "popup__error_visible"
 };
 let currentUserId;
+// UX для кнопки сохранить
+function renderLoading(isLoading, button, buttonText = "Сохранить") {
+  if (isLoading) {
+    button.textContent = "Сохранение...";
+  } else {
+    button.textContent = buttonText;
+  }
+}
 // Открытие модального окна по клику на кнопку
 function toggleModal(button, popup, isEdit = false) {
   button.addEventListener("click", function() {
@@ -52,6 +61,13 @@ function toggleModal(button, popup, isEdit = false) {
 toggleModal(updateButton, updatePopup)
 toggleModal(editButton, editPopup, true); 
 toggleModal(addButton, addPopup);
+// Модальное окно при клике на картинку
+function openImageModal(imageSrc, imageAlt) {
+  popupImage.src = imageSrc;
+  popupImage.alt = imageAlt;
+  popupCaption.textContent = imageAlt;
+  openModal(imgPopup);
+}
 // Функция заполнение инпутов значениями из элементов профиля
 function fillProfileForm() {
   nameInput.value = nameElement.textContent;
@@ -62,7 +78,7 @@ function updateUserProfile(userInfo) {
   nameElement.textContent = userInfo.name;
   descriptionElement.textContent = userInfo.about;
   if (userInfo.avatar && profileImage) {
-    profileImage.style.backgroundImage = `url('${userInfo.avatar}')`;
+    profileImage.style.backgroundImage = `url("${userInfo.avatar}")`;
   }
 }
 // Закрытие модального окна по клику на крестик
@@ -75,29 +91,34 @@ closeButtons.forEach(function (closeButton) {
 // Функция добавления аватара
 function handleUpdateFormSubmit(evt) {
   evt.preventDefault();
+  renderLoading(true, newAvatarForm.querySelector(".popup__button"));
+  const avatarData = avatarUrlInput.value;
 
-  const userData = avatarUrlInput.value;
-
-  addNewAvatar(userData)
+  addNewAvatar(avatarData)
     .then(() => {
-      profileImage.style.backgroundImage = `url('${userData}')`;
+      profileImage.style.backgroundImage = `url("${avatarData}")`;
       closeModal(updatePopup);
       newAvatarForm.reset();
       clearValidation(newAvatarForm, validationConfig);
     })
     .catch((error) => {
       console.error(error);
+    })
+    .finally(() => {
+      renderLoading(false, newAvatarForm.querySelector(".popup__button"));
     });
-}
+} 
 
 newAvatarForm.addEventListener("submit", handleUpdateFormSubmit);
 // Модальное окно с редактирование информации о пользователе
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
+  renderLoading(true, profileForm.querySelector(".popup__button"));
   const userData = {
     name: nameInput.value,
     about: descriptionInput.value
   }
+  
   updateUserInfo(userData)
     .then((updatedUserInfo) => {
       nameElement.textContent = updatedUserInfo.name;
@@ -106,21 +127,17 @@ function handleProfileFormSubmit(evt) {
     })
     .catch((error) => {
       console.error(error);
+    })
+    .finally(() => {
+      renderLoading(false, profileForm.querySelector(".popup__button"));
     });
 }
 
 profileForm.addEventListener("submit", handleProfileFormSubmit);
-// Модальное окно при клике на картинку
-function openImageModal(imageSrc, imageAlt) {
-  popupImage.src = imageSrc;
-  popupImage.alt = imageAlt;
-  popupCaption.textContent = imageAlt;
-  openModal(imgPopup);
-}
 // Модальное окно с добавление карточки
 function handlenewPlaceFormSubmit(evt) {
   evt.preventDefault();
-
+  renderLoading(true, newPlaceForm.querySelector(".popup__button"));
   const cardData = {
     name: nameCardInput.value,
     link: urlCardInput.value
@@ -143,6 +160,9 @@ function handlenewPlaceFormSubmit(evt) {
     })
     .catch((error) => {
       console.error(error);
+    })
+    .finally(() => {
+      renderLoading(false, newPlaceForm.querySelector(".popup__button"));
     });
 }
 

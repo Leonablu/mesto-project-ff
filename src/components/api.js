@@ -5,7 +5,7 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
-
+// Функция для просмотра информации о пользователе
 export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
@@ -21,7 +21,7 @@ export const getUserInfo = () => {
       return data
     });
 }
-
+// Функция для посмотра массива с карточками
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
@@ -37,7 +37,7 @@ export const getInitialCards = () => {
       return data
     });
 } 
-
+// Функция для обновлении информации о пользователе
 export const updateUserInfo = (userData) => {
   return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
@@ -45,7 +45,7 @@ export const updateUserInfo = (userData) => {
     body: JSON.stringify({
       name: userData.name,
       about: userData.about,
-      avatar: userData.avatar // Добавляем поле avatar в тело запроса
+      avatar: userData.avatar
     })
   })
   .then(res => {
@@ -56,7 +56,6 @@ export const updateUserInfo = (userData) => {
   })
   .then((data) => {
     console.log(data);
-    // Здесь можно обновить аватар в интерфейсе пользователя, если это необходимо
     if (userData.avatar && document.querySelector('.profile__image')) {
       document.querySelector('.profile__image').style.backgroundImage = `url('${userData.avatar}')`;
     }
@@ -66,7 +65,7 @@ export const updateUserInfo = (userData) => {
     console.log(err);
   });
 }
-
+// Функция для добавления новой карточки на сервер
 export const addNewCard = (cardData) => {
   return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
@@ -135,7 +134,7 @@ export const addNewAvatar = (avatarUrl) => {
     if (!res.ok) {
       throw new Error('Не удалось загрузить изображение');
     }
-    return res.json(); // Исправлено здесь
+    return res.json();
   })
   .then(data => {
     console.log('Изображение успешно добавлено', data);
