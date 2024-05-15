@@ -45,15 +45,6 @@ export const updateUserInfo = (userData) => {
     }),
   })
     .then(checkResponse)
-    .then((data) => {
-      console.log(data);
-      if (userData.avatar && document.querySelector(".profile__image")) {
-        document.querySelector(
-          ".profile__image"
-        ).style.backgroundImage = `url('${userData.avatar}')`;
-      }
-      return data;
-    })
     .catch((err) => {
       console.log(err);
     });
@@ -102,5 +93,6 @@ export const addNewAvatar = (avatarUrl) => {
     .then(checkResponse)
     .then((data) => {
       console.log("Изображение успешно добавлено", data);
+      return data;
     });
 };

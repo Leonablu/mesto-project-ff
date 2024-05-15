@@ -21,14 +21,12 @@ function createCard(options) {
   likeCounter.textContent = likes.length;   
  
   if (cardItem.owner._id !== userId) {
-     deleteButtonCard.style.display = "none";
-    }
-//Функция каллбека при удалении
-  deleteButtonCard.addEventListener("click", function () {
-    removeCard(cardItem._id)
-      .then(() => deleteCard(cardElement))
-      .catch(err => console.error(err));
-  });
+    deleteButtonCard.style.display = "none";
+  } else {
+    deleteButtonCard.addEventListener("click", function () {
+      deleteCallback(cardItem._id, cardElement);
+    });
+  }
 //Функция каллбека при лайке
   likeButtonCard.addEventListener("click", function () {
     likeCallback(cardItem._id, userId);
@@ -42,9 +40,12 @@ function createCard(options) {
   return cardElement;
 }
 //Функция удаления карточки
-function deleteCard(cardElement) {
-  cardElement.remove();
+function deleteCard(cardId, cardElement) {
+  removeCard(cardId)
+  .then(() => cardElement.remove())
+  .catch(err => console.error(err));
 }
+
 // Функция обработки лайка карточки
 function handleLike(cardId, userId) {
   const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);

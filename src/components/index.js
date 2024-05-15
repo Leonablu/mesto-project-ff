@@ -44,30 +44,26 @@ const validationConfig = {
 };
 let currentUserId;
 // UX для кнопки сохранить
-function renderLoading(isLoading, button, buttonText = "Сохранить") {
-  if (isLoading) {
-    button.textContent = "Сохранение...";
-  } else {
-    button.textContent = buttonText;
-  }
+function renderLoading(isLoading, form, buttonText = "Сохранить") {
+  const button = form.querySelector(validationConfig.submitButtonSelector);
+  button.textContent = isLoading ? "Сохранение..." : buttonText;
 }
 // Открытие модального окна по клику на кнопку
-function toggleModal(button, popup, isEdit = false) {
-  button.addEventListener("click", function () {
-    if (isEdit) {
-      fillProfileForm();
-      clearValidation(profileForm, validationConfig);
-    }
-    newPlaceForm.reset();
-    clearValidation(newPlaceForm, validationConfig);
-    newAvatarForm.reset();
-    clearValidation(newAvatarForm, validationConfig);
-    openModal(popup);
-  });
-}
-toggleModal(updateButton, updatePopup);
-toggleModal(editButton, editPopup, true);
-toggleModal(addButton, addPopup);
+function setupModalOpen(button, popup, form, callback) {
+  button.addEventListener("click", function () { 
+      clearValidation(form, validationConfig); 
+      callback();
+      openModal(popup); 
+    }); 
+  }
+
+setupModalOpen(editButton, editPopup, profileForm,  fillProfileForm);
+setupModalOpen(updateButton, updatePopup, newAvatarForm, function() {
+  newAvatarForm.reset();
+});
+setupModalOpen(addButton, addPopup, newPlaceForm, function(){
+  newPlaceForm.reset();
+})
 // Модальное окно при клике на картинку
 function openImageModal(imageSrc, imageAlt) {
   popupImage.src = imageSrc;
@@ -98,12 +94,12 @@ closeButtons.forEach(function (closeButton) {
 // Функция добавления аватара
 function handleUpdateFormSubmit(evt) {
   evt.preventDefault();
-  renderLoading(true, newAvatarForm.querySelector(".popup__button"));
+  renderLoading(true, newAvatarForm);
   const avatarData = avatarUrlInput.value;
 
   addNewAvatar(avatarData)
-    .then(() => {
-      profileImage.style.backgroundImage = `url("${avatarData}")`;
+    .then((updatedUserInfo) => {
+      profileImage.style.backgroundImage = `url("${updatedUserInfo.avatar}")`;
       closeModal(updatePopup);
       newAvatarForm.reset();
       clearValidation(newAvatarForm, validationConfig);
@@ -112,7 +108,7 @@ function handleUpdateFormSubmit(evt) {
       console.error(error);
     })
     .finally(() => {
-      renderLoading(false, newAvatarForm.querySelector(".popup__button"));
+      renderLoading(false, newAvatarForm);
     });
 }
 
@@ -120,23 +116,22 @@ newAvatarForm.addEventListener("submit", handleUpdateFormSubmit);
 // Модальное окно с редактирование информации о пользователе
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  renderLoading(true, profileForm.querySelector(".popup__button"));
+  renderLoading(true, profileForm);
   const userData = {
     name: nameInput.value,
     about: descriptionInput.value,
   };
 
   updateUserInfo(userData)
-    .then((updatedUserInfo) => {
-      nameElement.textContent = updatedUserInfo.name;
-      descriptionElement.textContent = updatedUserInfo.about;
-      closeModal(editPopup);
-    })
+  .then((updatedUserInfo) => {
+    updateUserProfile(updatedUserInfo);
+    closeModal(editPopup);
+  })
     .catch((error) => {
       console.error(error);
     })
     .finally(() => {
-      renderLoading(false, profileForm.querySelector(".popup__button"));
+      renderLoading(false, profileForm);
     });
 }
 
@@ -144,7 +139,7 @@ profileForm.addEventListener("submit", handleProfileFormSubmit);
 // Модальное окно с добавление карточки
 function handlenewPlaceFormSubmit(evt) {
   evt.preventDefault();
-  renderLoading(true, newPlaceForm.querySelector(".popup__button"));
+  renderLoading(true, newPlaceForm);
   const cardData = {
     name: nameCardInput.value,
     link: urlCardInput.value,
@@ -158,7 +153,7 @@ function handlenewPlaceFormSubmit(evt) {
         likeCallback: handleLike,
         imageClickCallback: openImageModal,
         userId: currentUserId,
-        likes: newCard.likes || [],
+        likes: newCard.likes
       });
       placesList.prepend(cardElement);
       closeModal(addPopup);
@@ -169,7 +164,7 @@ function handlenewPlaceFormSubmit(evt) {
       console.error(error);
     })
     .finally(() => {
-      renderLoading(false, newPlaceForm.querySelector(".popup__button"));
+      renderLoading(false, newPlaceForm);
     });
 }
 
