@@ -44,9 +44,6 @@ const validationConfig = {
   errorClass: "popup__error_visible",
 };
 let currentUserId;
-const confirmPopup = document.querySelector(".popup_type_confirm");
-const confirmButton = document.querySelector(".popup__button_type_confirm");
-let cardToDelete;
 // UX для кнопки сохранить
 function renderLoading(isLoading, form, buttonText = "Сохранить") {
   const button = form.querySelector(validationConfig.submitButtonSelector);
@@ -197,26 +194,4 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(err);
     });
 });
-// Функция открытия попапа подтверждения
-function openConfirmPopup(cardElement, cardId) {
-  cardToDelete = { element: cardElement, id: cardId };
-  openModal(confirmPopup);
-}
-// Функция закрытия попапа подтверждения
-function closeConfirmPopup() {
-  cardToDelete = null;
-  closeModal(confirmPopup);
-}
-// Обработчик для кнопки подтверждения удаления
-confirmButton.addEventListener("click", function () {
-  if (cardToDelete) {
-    removeCard(cardToDelete.id)
-      .then(() => {
-        cardToDelete.element.remove();
-        closeConfirmPopup();
-      })
-      .catch((err) => console.error(err));
-  }
-});
 
-export { openConfirmPopup };

@@ -1,5 +1,5 @@
-import { likeCard, dislikeCard } from "./api.js";
-import { openConfirmPopup } from "./index.js";
+import { likeCard, dislikeCard, removeCard } from "./api.js";
+import { openModal, closeModal } from "./modal.js";
 //Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
 //Функция создания карточки
@@ -48,11 +48,6 @@ function createCard(options) {
 
   return cardElement;
 }
-// Функция установки обработчиков для карточки
-function setupCardEvents(cardId, cardElement) {
-  openConfirmPopup(cardElement, cardId);
-}
-
 // Функция обработки лайка карточки
 function handleLike(cardId, userId) {
   const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
@@ -71,5 +66,42 @@ function updateLikeState(likeButton, likes, userId) {
   const likeCounter = likeButton.nextElementSibling;
   likeCounter.textContent = likes.length;
 }
+// Функция установки обработчиков для карточки
+function setupCardEvents(cardId, cardElement) {
+  openConfirmPopup(cardElement, cardId);
+}
+const confirmPopup = document.querySelector(".popup_type_confirm");
+const confirmButton = confirmPopup.querySelector(".popup__button_type_confirm");
+let currentCardElement = null;
+let currentCardId = null;
+// Функция удаления карточки
+function destroyCard() {
+  if (currentCardElement && currentCardId) {
+    removeCard(currentCardId)
+      .then(() => {
+        currentCardElement.remove();
+        closeConfirmPopup();
+      })
+      .catch((err) => console.error(err));
+  }
+}
+// Функция открытия попапа подтверждения
+function openConfirmPopup(cardElement, cardId) {
+  currentCardElement = cardElement;
+  currentCardId = cardId;
+  openModal(confirmPopup);
+}
+
+// Функция закрытия попапа подтверждения
+function closeConfirmPopup() {
+  closeModal(confirmPopup);
+  currentCardElement = null;
+  currentCardId = null;
+}
+// Установка обработчика на кнопку подтверждения
+confirmButton.addEventListener("click", destroyCard);
 
 export { createCard, setupCardEvents, handleLike };
+
+
+
