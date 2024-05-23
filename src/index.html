@@ -21,12 +21,7 @@
         </header>
         <main class="content">
           <section class="profile page__section">
-            <div
-              class="profile__image"
-              style="
-                background-image: url('<%=require('../src/images/avatar.jpg')%>');
-              "
-            >
+            <div class="profile__image" style="">
               <div class="profile__darken-overlay"></div>
               <button class="profile__update-button" type="button">
                 <svg
@@ -44,9 +39,9 @@
               </button>
             </div>
             <div class="profile__info">
-              <h1 class="profile__title">Жак-Ив Кусто</h1>
+              <h1 class="profile__title"></h1>
               <button class="profile__edit-button" type="button"></button>
-              <p class="profile__description">Исследователь океана</p>
+              <p class="profile__description"></p>
             </div>
             <button class="profile__add-button" type="button"></button>
           </section>
@@ -136,38 +131,50 @@
             <p class="popup__caption"></p>
           </div>
         </div>
-      </div>
-      <div class="popup popup_type_new-avatar">
-        <div class="popup__content">
-          <button type="button" class="popup__close"></button>
-          <h3 class="popup__title">Обновить аватар</h3>
-          <form class="popup__form" name="avatar-profile" novalidate>
-            <input
-              type="url"
-              name="link"
-              class="popup__input popup__input_type_avatar-url"
-              id="link-id"
-              placeholder="Ссылка на аватарку"
-              required
-            />
-            <span class="link-id-error form__input-error"></span>
-            <button type="submit" class="button popup__button">
-              Сохранить
-            </button>
-          </form>
-        </div>
-      </div>
-      <template id="card-template">
-        <li class="places__item card">
-          <img class="card__image" src="" alt="" />
-          <button type="button" class="card__delete-button"></button>
-          <div class="card__description">
-            <h2 class="card__title"></h2>
-            <button type="button" class="card__like-button"></button>
-            <p class="card__like-count">0</p>
+        <div class="popup popup_type_new-avatar">
+          <div class="popup__content">
+            <button type="button" class="popup__close"></button>
+            <h3 class="popup__title">Обновить аватар</h3>
+            <form class="popup__form" name="avatar-profile" novalidate>
+              <input
+                type="url"
+                name="link"
+                class="popup__input popup__input_type_avatar-url"
+                id="link-id"
+                placeholder="Ссылка на аватарку"
+                required
+              />
+              <span class="link-id-error form__input-error"></span>
+              <button type="submit" class="button popup__button">
+                Сохранить
+              </button>
+            </form>
           </div>
-        </li>
-      </template>
+        </div>
+        <div class="popup popup_type_confirm">
+          <div class="popup__content">
+            <button type="button" class="popup__close"></button>
+            <h3 class="popup__title">Вы уверены?</h3>
+            <button
+              type="submit"
+              class="button popup__button popup__button_type_confirm"
+            >
+              Да
+            </button>
+          </div>
+        </div>
+        <template id="card-template">
+          <li class="places__item card">
+            <img class="card__image" src="" alt="" />
+            <button type="button" class="card__delete-button"></button>
+            <div class="card__description">
+              <h2 class="card__title"></h2>
+              <button type="button" class="card__like-button"></button>
+              <p class="card__like-count">0</p>
+            </div>
+          </li>
+        </template>
+      </div>
     </div>
   </body>
 </html>

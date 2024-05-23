@@ -1,7 +1,8 @@
 import "../pages/index.css";
-import { createCard, deleteCard, handleLike } from "./card.js";
+import { createCard, setupCardEvents, handleLike } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
 import { enableValidation, clearValidation } from "./validation.js";
+import { removeCard } from "./api.js";
 import {
   getInitialCards,
   getUserInfo,
@@ -43,6 +44,9 @@ const validationConfig = {
   errorClass: "popup__error_visible",
 };
 let currentUserId;
+const confirmPopup = document.querySelector(".popup_type_confirm");
+const confirmButton = document.querySelector(".popup__button_type_confirm");
+let cardToDelete;
 // UX для кнопки сохранить
 function renderLoading(isLoading, form, buttonText = "Сохранить") {
   const button = form.querySelector(validationConfig.submitButtonSelector);
@@ -50,20 +54,20 @@ function renderLoading(isLoading, form, buttonText = "Сохранить") {
 }
 // Открытие модального окна по клику на кнопку
 function setupModalOpen(button, popup, form, callback) {
-  button.addEventListener("click", function () { 
-      clearValidation(form, validationConfig); 
-      callback();
-      openModal(popup); 
-    }); 
-  }
+  button.addEventListener("click", function () {
+    clearValidation(form, validationConfig);
+    callback();
+    openModal(popup);
+  });
+}
 
-setupModalOpen(editButton, editPopup, profileForm,  fillProfileForm);
-setupModalOpen(updateButton, updatePopup, newAvatarForm, function() {
+setupModalOpen(editButton, editPopup, profileForm, updateProfileForm);
+setupModalOpen(updateButton, updatePopup, newAvatarForm, function () {
   newAvatarForm.reset();
 });
-setupModalOpen(addButton, addPopup, newPlaceForm, function(){
+setupModalOpen(addButton, addPopup, newPlaceForm, function () {
   newPlaceForm.reset();
-})
+});
 // Модальное окно при клике на картинку
 function openImageModal(imageSrc, imageAlt) {
   popupImage.src = imageSrc;
@@ -71,17 +75,16 @@ function openImageModal(imageSrc, imageAlt) {
   popupCaption.textContent = imageAlt;
   openModal(imgPopup);
 }
-// Функция заполнение инпутов значениями из элементов профиля
-function fillProfileForm() {
-  nameInput.value = nameElement.textContent;
-  descriptionInput.value = descriptionElement.textContent;
-}
-// Функция обновления профиля
-function updateUserProfile(userInfo) {
-  nameElement.textContent = userInfo.name;
-  descriptionElement.textContent = userInfo.about;
-  if (userInfo.avatar && profileImage) {
-    profileImage.style.backgroundImage = `url("${userInfo.avatar}")`;
+// Функция заполнения формы профиля и обновления профиля
+function updateProfileForm(userInfo) {
+  if (userInfo) {
+    nameInput.value = userInfo.name;
+    descriptionInput.value = userInfo.about;
+    if (userInfo.avatar && profileImage) {
+      profileImage.style.backgroundImage = `url("${userInfo.avatar}")`;
+    }
+    nameElement.textContent = userInfo.name;
+    descriptionElement.textContent = userInfo.about;
   }
 }
 // Закрытие модального окна по клику на крестик
@@ -123,10 +126,10 @@ function handleProfileFormSubmit(evt) {
   };
 
   updateUserInfo(userData)
-  .then((updatedUserInfo) => {
-    updateUserProfile(updatedUserInfo);
-    closeModal(editPopup);
-  })
+    .then((updatedUserInfo) => {
+      updateProfileForm(updatedUserInfo);
+      closeModal(editPopup);
+    })
     .catch((error) => {
       console.error(error);
     })
@@ -149,11 +152,11 @@ function handlenewPlaceFormSubmit(evt) {
     .then((newCard) => {
       const cardElement = createCard({
         cardItem: newCard,
-        deleteCallback: deleteCard,
+        deleteCallback: setupCardEvents,
         likeCallback: handleLike,
         imageClickCallback: openImageModal,
         userId: currentUserId,
-        likes: newCard.likes
+        likes: newCard.likes,
       });
       placesList.prepend(cardElement);
       closeModal(addPopup);
@@ -179,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cards.forEach(function (cardItem) {
         const cardOptions = {
           cardItem: cardItem,
-          deleteCallback: deleteCard,
+          deleteCallback: setupCardEvents,
           likeCallback: handleLike,
           imageClickCallback: openImageModal,
           userId: userInfo._id,
@@ -188,9 +191,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         placesList.append(createCard(cardOptions));
       });
-      updateUserProfile(userInfo);
+      updateProfileForm(userInfo);
     })
     .catch((err) => {
       console.log(err);
     });
 });
+// Функция открытия попапа подтверждения
+function openConfirmPopup(cardElement, cardId) {
+  cardToDelete = { element: cardElement, id: cardId };
+  openModal(confirmPopup);
+}
+// Функция закрытия попапа подтверждения
+function closeConfirmPopup() {
+  cardToDelete = null;
+  closeModal(confirmPopup);
+}
+// Обработчик для кнопки подтверждения удаления
+confirmButton.addEventListener("click", function () {
+  if (cardToDelete) {
+    removeCard(cardToDelete.id)
+      .then(() => {
+        cardToDelete.element.remove();
+        closeConfirmPopup();
+      })
+      .catch((err) => console.error(err));
+  }
+});
+
+export { openConfirmPopup };
